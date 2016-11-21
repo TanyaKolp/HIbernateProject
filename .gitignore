@@ -1,3 +1,6 @@
 .idea
 /out/
 *.class
+src/test/
+target/
+gasstations.iml
