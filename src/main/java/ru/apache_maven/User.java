@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 public class User {
-    public User(){
+    public User() {
     }
 
     public User(String name) {
@@ -17,16 +17,16 @@ public class User {
     }
 
 
-
     @Id
     @Column(name = "user_id", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //    @ManyToMany
 //    @JoinTable(name = "user_company",
 //            joinColumns = @JoinColumn(name = "user_id"),
 //            inverseJoinColumns = @JoinColumn(name = "company_id"))
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private Company company;
 
@@ -59,8 +59,8 @@ public class User {
     }
 
     public String toString() {
-        return getUser_id().toString() + "-" + getName() ;
-                //+ "-" + getCompany().getCompany_name();
+        return getUser_id().toString() + "-" + getName();
+        //+ "-" + getCompany().getCompany_name();
 
     }
 }

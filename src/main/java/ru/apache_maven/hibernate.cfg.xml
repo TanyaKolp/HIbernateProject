@@ -24,8 +24,10 @@
         <property name="show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
 
-        <mapping class="User.java" />
-        <mapping class="Company.java" />
+        <!-- List of mapping classes -->
+        <!--<mapping class="User.java" />-->
+        <!--<mapping class="Company.java" />-->
+        <!--<mapping class="GasStation.java" />-->
 
         <!-- List of XML mapping files -->
         <!--<mapping resource="user.cfg.xml" />-->

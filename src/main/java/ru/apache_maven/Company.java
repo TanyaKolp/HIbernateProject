@@ -9,10 +9,10 @@ import java.util.List;
 @Entity
 @Table(name = "Companies")
 public class Company {
-    public Company(){
+    public Company() {
     }
 
-    public Company(String company_name){
+    public Company(String company_name) {
         this.company_name = company_name;
     }
 
@@ -23,6 +23,9 @@ public class Company {
 
     @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
     private List<User> users;
+
+    @OneToMany(mappedBy = "company")
+    private List<GasStation> stations;
 
     @Column(length = 20)
     private String company_name;
