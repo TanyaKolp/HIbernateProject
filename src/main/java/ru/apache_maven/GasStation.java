@@ -22,6 +22,10 @@ public class GasStation {
     @JoinColumn(name = "company_id")
     private Company company;
 
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
     public Integer getStation_id() {
         return station_id;
     }

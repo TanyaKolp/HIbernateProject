@@ -19,6 +19,9 @@ public class HibUtil {
         cfg.addAnnotatedClass(User.class);
         cfg.addAnnotatedClass(Company.class);
         cfg.addAnnotatedClass(GasStation.class);
+        cfg.addAnnotatedClass(FuelType.class);
+        cfg.addAnnotatedClass(Location.class);
+
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
 
         factory = cfg.buildSessionFactory(builder.build());

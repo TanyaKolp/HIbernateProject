@@ -21,11 +21,14 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer company_id;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "companies", fetch = FetchType.EAGER)
     private List<User> users;
 
     @OneToMany(mappedBy = "company")
     private List<GasStation> stations;
+
+    @OneToMany(mappedBy = "company")
+    private List<FuelType> fuelTypes;
 
     @Column(length = 20)
     private String company_name;
@@ -44,6 +47,22 @@ public class Company {
 
     public void setCompany_name(String company_name) {
         this.company_name = company_name;
+    }
+
+    public List<GasStation> getStations() {
+        return stations;
+    }
+
+    public void setStations(List<GasStation> stations) {
+        this.stations = stations;
+    }
+
+    public List<FuelType> getFuelTypes() {
+        return fuelTypes;
+    }
+
+    public void setFuelTypes(List<FuelType> fuelTypes) {
+        this.fuelTypes = fuelTypes;
     }
 
     public List<User> getUsers() {

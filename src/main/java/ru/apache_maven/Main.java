@@ -29,9 +29,9 @@ public class Main {
         try {
             session.beginTransaction();
 
-            String hql = "select e from User e inner join e.company";
-            Query query = session.createQuery(hql);
-            users = query.getResultList();
+//            String hql = "select e from User e inner join e.company";
+//            Query query = session.createQuery(hql);
+//            users = query.getResultList();
 
 //
 //            Criteria criteria2 = session.createCriteria(Company.class, "company");
@@ -52,9 +52,7 @@ public class Main {
 //        for (Iterator iterator = users.iterator(); iterator.hasNext(); ) {
 //            System.out.println(iterator.next().toString());
 //        }
-        for (User f : users) {
-            System.out.println(f.getName()+"-"+f.getCompany().getCompany_name());
-        }
+
 //
 //        for (Company company : companies) {
 //            System.out.println(company.getCompany_name());
