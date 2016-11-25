@@ -17,12 +17,21 @@ public class Location {
     private String region;
     private String city;
     private String roadNumber;
+    private String address;
 
     @OneToMany(mappedBy = "location")
     private List<GasStation> gasStations;
 
     public Integer getLocation_id() {
         return location_id;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public void setLocation_id(Integer location_id) {

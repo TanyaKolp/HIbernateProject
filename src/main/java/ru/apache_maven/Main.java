@@ -28,7 +28,24 @@ public class Main {
         Session session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-
+//            User u2 = (User) session.load(User.class, 2);
+//            User u3 = (User) session.load(User.class, 3);
+//            User u4 = (User) session.load(User.class, 4);
+//            User u5 = (User) session.load(User.class, 5);
+//            User u6 = (User) session.load(User.class, 6);
+//            User u7 = (User) session.load(User.class, 7);
+//            User u8 = (User) session.load(User.class, 8);
+//            User u9 = (User) session.load(User.class, 9);
+//            User u10 = (User) session.load(User.class, 10);
+//            u2.setFirstName("John");
+//            u3.setFirstName("Joe");
+//            u4.setFirstName("Sam");
+//            u5.setFirstName("Ivan");
+//            u6.setFirstName("Alex");
+//            u7.setFirstName("Olga");
+//            u8.setFirstName("Helen");
+//            u9.setFirstName("Oleg");
+//            u10.setFirstName("Leo");
 //            String hql = "select e from User e inner join e.company";
 //            Query query = session.createQuery(hql);
 //            users = query.getResultList();
