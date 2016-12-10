@@ -1,4 +1,4 @@
-package ru.apache_maven;
+package ru.apache_maven.models;
 
 import javax.persistence.*;
 

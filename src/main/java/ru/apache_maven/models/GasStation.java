@@ -1,7 +1,6 @@
-package ru.apache_maven;
+package ru.apache_maven.models;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by tania on 11/21/16.

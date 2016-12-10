@@ -3,8 +3,7 @@ package ru.apache_maven;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-
-import java.io.File;
+import ru.apache_maven.models.*;
 
 /**
  * Created by tania on 11/16/16.
@@ -21,9 +20,8 @@ public class HibUtil {
         cfg.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/GasStations");
         cfg.setProperty("hibernate.connection.username", "root" );
         cfg.setProperty("hibernate.connection.password", "rumin" );
-        cfg.setProperty("show_sql", "true" );
+        cfg.setProperty("hibernate.show_sql", "true" );
         cfg.setProperty("hibernate.hbm2ddl.auto", "update" );
-
 
         cfg.addAnnotatedClass(User.class);
         cfg.addAnnotatedClass(Company.class);
@@ -32,7 +30,6 @@ public class HibUtil {
         cfg.addAnnotatedClass(Location.class);
 
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
-
         factory = cfg.buildSessionFactory(builder.build());
     }
 

@@ -1,4 +1,6 @@
-package ru.apache_maven;
+package ru.apache_maven.models;
+
+import ru.apache_maven.models.GasStation;
 
 import javax.persistence.*;
 import java.util.List;

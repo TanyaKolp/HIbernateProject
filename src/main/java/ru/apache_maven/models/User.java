@@ -1,4 +1,6 @@
-package ru.apache_maven;
+package ru.apache_maven.models;
+
+import ru.apache_maven.models.Company;
 
 import javax.persistence.*;
 import java.util.List;
@@ -9,7 +11,10 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 public class User {
-    public User() {
+    public User(){}
+    public User(String login, String password) {
+        this.login =login;
+        this.password =password;
     }
 
 
