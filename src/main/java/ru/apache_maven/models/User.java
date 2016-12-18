@@ -3,7 +3,9 @@ package ru.apache_maven.models;
 import ru.apache_maven.models.Company;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tania on 11/14/16.
@@ -34,7 +36,7 @@ public class User {
     @JoinTable(name = "FavoriteCompanies",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "company_id"))
-    private List<Company> companies;
+    private Set<Company> companies;
 
     @Column(name = "firstName")
     private String firstName;
@@ -44,7 +46,16 @@ public class User {
     private String login;
     @Column(length = 20, nullable = false)
     private String password;
+    @Column
+    private Boolean admin;
 
+    public Boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
+    }
 
     public Integer getUser_id() {
         return user_id;
@@ -54,11 +65,14 @@ public class User {
         this.user_id = user_id;
     }
 
-    public List<Company> getCompanies() {
+    public Set<Company> getCompanies() {
+        if(companies==null) {
+            companies = new HashSet<>();
+        }
         return companies;
     }
 
-    public void setCompanies(List<Company> companies) {
+    public void setCompanies(Set<Company> companies) {
         this.companies = companies;
     }
 

@@ -7,8 +7,4 @@ import org.hibernate.Session;
  */
 public interface Command {
     public void execute();
-    public void execute(Session session);
-    public String getName();
-    public Message createMessage();
-    public Message getMassage();
 }

@@ -1,42 +1,41 @@
 package ru.apache_maven;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.apache_maven.commands.Command;
-import ru.apache_maven.commands.Message;
-import ru.apache_maven.models.User;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by tania on 12/1/16.
  */
-//client
+@Component
 public class InputController {
-    String info = "...some instructions...\n";
-    public SessionController sessionController = new SessionController();
-    AllCommands allCommands = AllCommands.getInstance();
+    String info = "...some instructions...";
+    SessionController sessionController = SessionController.getInstance();
+    @Autowired
+    AllCommands allCommands;
     Scanner sc = new Scanner(System.in);
-    Integer command;
     boolean flag = true;
+
 
     public void init() {
         getInfo();
-
         enter();
         while (flag) {
-            System.out.println("Choose command:");
-            allCommands.showCommands();
-            command = getAndCheckNumberInput();
-            Command currentCommand = allCommands.commands.get(command);
-            Message currentMessage = currentCommand.createMessage();
-            ArrayList<String> linesInput;
-            while (currentMessage.isHasNextStep()) {
-                currentMessage.run();
-                linesInput = getLinesInput();
-                currentMessage.getArgs().add(linesInput);
+            System.out.println("Print command...");
+            allCommands.input =parseInputString();
+            allCommands.executeCommand();
+            System.out.println("Print 'end' to finish work, or press 'Enter' to continue");
+            String input = sc.nextLine();
+            if (input.equalsIgnoreCase("end")) {
+                flag = false;
             }
-            currentCommand.execute();
-            flag = false;
         }
+        sessionController.commitTransaction();
+        sessionController.closeSession();
     }
 
     private void enter() {
@@ -49,7 +48,6 @@ public class InputController {
                     String login = sc.nextLine();
                     System.out.println("Enter password:");
                     String password = sc.nextLine();
-                    sessionController.beginTransaction();
                     if (sessionController.checkUser(login, password)) {
                         break;
                     } else {
@@ -102,8 +100,29 @@ public class InputController {
         return data;
     }
 
-    public String getInfo() {
-        return info;
+    public void getInfo() {
+        System.out.println(info);
+    }
+
+    public ArrayList<String> parseInputString() {
+        ArrayList<String> inputList = new ArrayList<>();
+        while (true) {
+            String input = sc.nextLine();
+            Pattern pattern = Pattern.compile("^(show|set|find)+ " +
+                    "(compan[ies,y]|favorite|stations by|price lists|my price lists)+" +
+                    "( [A-Za-z0-9]*[, [A-Za-z0-9]*[A-Za-z0-9]+]*)?");
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.matches()) {
+                inputList.add(matcher.group(1));
+                inputList.add(matcher.group(2));
+                inputList.add(matcher.group(3));
+                break;
+            } else {
+                System.out.println("Wrong enter!..");
+                System.out.println("Use pattern: <command> <entity> <value(s)>");
+            }
+        }
+        return inputList;
     }
 }
 

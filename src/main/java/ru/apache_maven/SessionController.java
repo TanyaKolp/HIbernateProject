@@ -3,61 +3,59 @@ package ru.apache_maven;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.annotations.Table;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.metadata.ClassMetadata;
-import ru.apache_maven.commands.Command;
 import ru.apache_maven.models.User;
 
-import javax.persistence.Query;
-import javax.persistence.TableGenerator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by tania on 12/2/16.
  */
 public class SessionController {
+
     SessionFactory sessionFactory = HibUtil.getSessionFactory();
     Session session = sessionFactory.openSession();
-    public SessionController(){
+    public static SessionController instance = new SessionController();
+    User currentUser = null;
+
+    private SessionController() {
         session.beginTransaction();
-    }
-    public void openSession() {
-        session = sessionFactory.openSession();
     }
 
-    public void beginTransaction() {
-        session.beginTransaction();
+    public static SessionController getInstance() {
+        return instance;
     }
 
     public void commitTransaction() {
         session.getTransaction().commit();
     }
+    public Criteria getCriteria(Class clazz){
+        return session.createCriteria(clazz);
+    }
+    public void saveSession(Object o){
+        session.save(o);
+    }
 
     public void closeSession() {
         session.close();
+        sessionFactory.close();
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 
     public ArrayList<String> showTables() {
-        SessionFactory sessionFactory = HibUtil.getSessionFactory();
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
         ArrayList<String> allTables = (ArrayList<String>) session.createSQLQuery("SHOW TABLES").list();
         for (int i = 0; i < allTables.size(); i++) {
             System.out.println(i + ".  " + allTables.get(i));
         }
-        session.getTransaction().commit();
         return allTables;
     }
 
     public ArrayList<String> showColumns(String tableName) {
-        SessionFactory sessionFactory = HibUtil.getSessionFactory();
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
         ArrayList<String> columns = (ArrayList<String>) session.createSQLQuery("select COLUMN_NAME" +
                 " from information_schema.COLUMNS" +
                 " where TABLE_NAME='" + tableName + "'").list();
@@ -65,9 +63,6 @@ public class SessionController {
             System.out.println(i + ".  " + columns.get(i));
 
         }
-
-        session.getTransaction().commit();
-
         return columns;
     }
 
@@ -75,6 +70,7 @@ public class SessionController {
         boolean exist = false;
         Criteria criteria = session.createCriteria(User.class);
         User user = (User) criteria.add(Restrictions.eq("login", userLogin)).uniqueResult();
+        this.currentUser = user;
         if (user != null) {
             if (user.getPassword().equalsIgnoreCase(userPassword)) {
                 System.out.println("welcome!");
@@ -90,23 +86,14 @@ public class SessionController {
         return exist;
     }
 
-    private void old() {
-        try {
-            session.beginTransaction();
-
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-            sessionFactory.close();
-        }
-    }
-
     public void addRow() {
 
+    }
+
+    public List show(Class clazz) {
+        Criteria criteria = session.createCriteria(clazz);
+        ArrayList list = (ArrayList) criteria.list();
+        return list;
     }
 
     public boolean addUser(String userLogin, String userPassword) {
@@ -115,6 +102,7 @@ public class SessionController {
         if (user == null) {
             User newUser = new User(userLogin, userPassword);
             session.save(newUser);
+            this.currentUser = newUser;
             commitTransaction();
             return true;
         } else {

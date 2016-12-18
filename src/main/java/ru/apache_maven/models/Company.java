@@ -2,6 +2,7 @@ package ru.apache_maven.models;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tania on 11/15/16.
@@ -22,7 +23,7 @@ public class Company {
     private Integer company_id;
 
     @ManyToMany(mappedBy = "companies", fetch = FetchType.EAGER)
-    private List<User> users;
+    private Set<User> users;
 
     @OneToMany(mappedBy = "company")
     private List<GasStation> stations;
@@ -65,11 +66,11 @@ public class Company {
         this.fuelTypes = fuelTypes;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 }

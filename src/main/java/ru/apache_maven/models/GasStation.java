@@ -11,34 +11,43 @@ public class GasStation {
     @Id
     @Column(name = "station_id", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer station_id;
-
-    private Integer station_number;
+    private Integer stationId;
+    @Column(name = "station_number")
+    private Integer stationNumber;
     private Boolean shop;
     private Boolean cafe;
+
 
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "location_id")
     private Location location;
 
-    public Integer getStation_id() {
-        return station_id;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setStation_id(Integer station_id) {
-        this.station_id = station_id;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
-    public Integer getStation_number() {
-        return station_number;
+    public Integer getStationId() {
+        return stationId;
     }
 
-    public void setStation_number(Integer station_number) {
-        this.station_number = station_number;
+    public void setStationId(Integer stationId) {
+        this.stationId = stationId;
+    }
+
+    public Integer getStationNumber() {
+        return stationNumber;
+    }
+
+    public void setStationNumber(Integer stationNumber) {
+        this.stationNumber = stationNumber;
     }
 
     public Boolean getShop() {

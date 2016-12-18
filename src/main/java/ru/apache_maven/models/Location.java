@@ -21,12 +21,8 @@ public class Location {
     private String roadNumber;
     private String address;
 
-    @OneToMany(mappedBy = "location")
-    private List<GasStation> gasStations;
-
-    public Integer getLocation_id() {
-        return location_id;
-    }
+    @OneToOne(mappedBy = "location", fetch = FetchType.EAGER)
+    private GasStation gasStation;
 
     public String getAddress() {
         return address;
@@ -34,6 +30,10 @@ public class Location {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Integer getLocation_id() {
+        return location_id;
     }
 
     public void setLocation_id(Integer location_id) {
@@ -64,11 +64,11 @@ public class Location {
         this.roadNumber = roadNumber;
     }
 
-    public List<GasStation> getGasStations() {
-        return gasStations;
+    public GasStation getGasStations() {
+        return gasStation;
     }
 
-    public void setGasStations(List<GasStation> gasStations) {
-        this.gasStations = gasStations;
+    public void setGasStations(GasStation gasStations) {
+        this.gasStation = gasStations;
     }
 }
