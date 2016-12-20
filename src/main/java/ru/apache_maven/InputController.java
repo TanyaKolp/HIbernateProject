@@ -13,7 +13,17 @@ import java.util.regex.Pattern;
  */
 @Component
 public class InputController {
-    String info = "...some instructions...";
+    String info = "You can use 3 commands: set, find, show.\n" +
+            "Pattern: '<command> <first part> <second part>'\n" +
+            "<command> can be 'set', 'find' or 'show'\n" +
+            "<first part> can be 'all' or 'my' with 'find' and 'show' command and 'favorite' with 'set' command\n" +
+            "'my' means use only your favorite companies, 'all' - all companies\n" +
+            "<second part> tels what you want to see.\n" +
+            "For example, 'show all station' means print information about stations of all companies\n" +
+            "For 'set' command in this part you should print values, separated by ','\n" +
+            "You can enter search terms in this part - print after keyword 'by' search criteria\n" +
+            " (it could be 'road', 'city' or 'region') and then value, for example:\n" +
+            "'find my station by city Moscow'" ;
     SessionController sessionController = SessionController.getInstance();
     @Autowired
     AllCommands allCommands;
