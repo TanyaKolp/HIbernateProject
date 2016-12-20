@@ -25,33 +25,50 @@ public class AllCommands {
     ShowPriceListsOfFavoriteCompaniesCommand showPriceListsOfFavoriteCompaniesCommand;
     @Autowired
     FindStationsCommand findStationsCommand;
+    @Autowired
+    ShowFavoriteCompaniesCommand showFavoriteCompaniesCommand;
+    @Autowired
+    ShowFavoriteStationsCommand showFavoriteStationsCommand;
+    @Autowired
+    FindFavoriteStationsCommand findFavoriteStationsCommand;
 
     public void executeCommand() {
 
         switch (input.get(0)) {
             case "show":
-                if (input.get(1).equalsIgnoreCase("Company")) {
-                    showCompaniesCommand.execute();
-                } else if (input.get(1).startsWith("stations")) {
-                    showStationsCommand.execute();
-                } else if (input.get(1).equalsIgnoreCase("price lists")) {
-                    showPriceListsOfAllCompaniesCommand.execute();
-                } else if (input.get(1).equalsIgnoreCase("my price lists")) {
-                    showPriceListsOfFavoriteCompaniesCommand.execute();
+                if (input.get(1).equalsIgnoreCase("all")) {
+                    if (input.get(2).startsWith("company")) {
+                        showCompaniesCommand.execute();
+                    } else if (input.get(2).startsWith("price")) {
+                        showPriceListsOfAllCompaniesCommand.execute();
+                    } else {
+                        showStationsCommand.execute();
+                    }
                 } else {
-                    System.out.println("someth is wrong ");
+                    if (input.get(2).startsWith("company")) {
+                        showFavoriteCompaniesCommand.execute();
+                    } else if (input.get(2).startsWith("price")) {
+                        showPriceListsOfFavoriteCompaniesCommand.execute();
+                    } else {
+                        showFavoriteStationsCommand.execute();
+                    }
                 }
                 break;
             case "set":
                 if (input.get(1).equalsIgnoreCase("favorite")) {
                     setFavoriteCompaniesCommand.execute(input.get(2));
-                }else{
+                } else {
                     System.out.println("someth is wrong ");
                 }
                 break;
             case "find":
-                if(input.get(1).equalsIgnoreCase("stations by"))
-                findStationsCommand.execute(input.get(2));
+                if (input.get(1).equalsIgnoreCase("all")) {
+                    findStationsCommand.execute(input.get(3));
+                } else {
+                    findFavoriteStationsCommand.execute(input.get(3));
+                }
+                if (input.get(1).equalsIgnoreCase("station by"))
+                    findStationsCommand.execute(input.get(2));
                 break;
             default:
                 System.out.println("someth is wrong ");

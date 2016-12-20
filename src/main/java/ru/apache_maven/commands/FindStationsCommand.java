@@ -27,13 +27,21 @@ public class FindStationsCommand implements Command {
     public void execute(String condition) {
         StringTokenizer st = new StringTokenizer(condition);
         String columnName = st.nextToken();
+        if (columnName.equalsIgnoreCase("road")) {
+            columnName = "roadNumber";
+        }
         String value = st.nextToken();
         Criteria criteria = sessionController.getCriteria(Location.class);
         List<Location> locations = (List<Location>) criteria.add(Restrictions.eq(columnName, value)).list();
-        for (Location location : locations) {
-            System.out.println(location.getGasStations().getStationNumber() + " - " +
-                    location.getGasStations().getCompany().getCompany_name()+ " - " +
-            location.getAddress());
+        if (locations.size() != 0) {
+            for (Location location : locations) {
+                System.out.println(location.getGasStations().getStationNumber() + " - " +
+                        location.getGasStations().getCompany().getCompany_name() + " - " +
+                        location.getAddress());
+            }
+        }else {
+            System.out.printf("Not found");
         }
+        System.out.println("Done.");
     }
 }

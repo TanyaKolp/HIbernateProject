@@ -19,14 +19,22 @@ public class InputController {
     AllCommands allCommands;
     Scanner sc = new Scanner(System.in);
     boolean flag = true;
+    String input;
 
 
     public void init() {
         getInfo();
         enter();
         while (flag) {
-            System.out.println("Print command...");
-            allCommands.input =parseInputString();
+            while (true) {
+                System.out.println("Print command...");
+                input = sc.nextLine();
+                if (!parseInputString()) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
             allCommands.executeCommand();
             System.out.println("Print 'end' to finish work, or press 'Enter' to continue");
             String input = sc.nextLine();
@@ -104,26 +112,94 @@ public class InputController {
         System.out.println(info);
     }
 
-    public ArrayList<String> parseInputString() {
+    public boolean parseInputString() {
         ArrayList<String> inputList = new ArrayList<>();
-        while (true) {
-            String input = sc.nextLine();
-            Pattern pattern = Pattern.compile("^(show|set|find)+ " +
-                    "(compan[ies,y]|favorite|stations by|price lists|my price lists)+" +
-                    "( [A-Za-z0-9]*[, [A-Za-z0-9]*[A-Za-z0-9]+]*)?");
-            Matcher matcher = pattern.matcher(input);
+        Pattern pattern;
+        Matcher matcher;
+        String currentWord;
+        StringTokenizer st = new StringTokenizer(input);
+        if (st.countTokens() < 3) {
+            System.out.println("Wrong enter!");
+            System.out.println("Please, enter query again:");
+            return false;
+        } else {
+            //check first word
+            currentWord = st.nextToken();
+            pattern = Pattern.compile("(set|find|show)");
+            matcher = pattern.matcher(currentWord);
             if (matcher.matches()) {
-                inputList.add(matcher.group(1));
-                inputList.add(matcher.group(2));
-                inputList.add(matcher.group(3));
-                break;
+                inputList.add(currentWord);
             } else {
-                System.out.println("Wrong enter!..");
-                System.out.println("Use pattern: <command> <entity> <value(s)>");
+                System.out.println("Wrong command!");
+                System.out.println("Please, enter query again:");
+                return false;
+            }
+            //check second word
+            currentWord = st.nextToken();
+            pattern = Pattern.compile("(all|my|favorite|firstName|lastName)");
+            matcher = pattern.matcher(currentWord);
+            if (matcher.matches()) {
+                inputList.add(currentWord);
+            } else {
+                System.out.println("Wrong second word!");
+                System.out.println("Please, enter query again:");
+                return false;
+            }
+            //check third word
+            currentWord = st.nextToken();
+            if (inputList.get(0).equalsIgnoreCase("set")) {
+                inputList.add(currentWord);
+            } else {
+                pattern = Pattern.compile("(company|priceList|station)");
+                matcher = pattern.matcher(currentWord);
+                if (matcher.matches()) {
+                    inputList.add(currentWord);
+                }else {
+                    System.out.println("Wrong third word!");
+                    System.out.println("Please, enter query again:");
+                    return false;
+                }
+            }
+            //check end of string
+            if (st.hasMoreTokens()) {
+                currentWord = st.nextToken();
+                if (currentWord.equalsIgnoreCase("by")) {
+                    currentWord = input.substring(input.indexOf("by")+3);
+                    pattern = Pattern.compile("(city|region|road) [A-Za-z0-9]+" +
+                            "(, (city|region|road) [A-Za-z0-9]+)*");
+                    matcher = pattern.matcher(currentWord);
+                    if(matcher.matches()){
+                        inputList.add(currentWord);
+                    }else {
+                        System.out.println("Wrong enter! You should choose condition - 'city', 'region' or 'road'");
+                        System.out.println("Please, enter query again:");
+                        return false;
+                    }
+                }else {
+                    System.out.println("No key word 'by'");
+                    System.out.println("Please, enter query again:");
+                    return false;
+                }
             }
         }
-        return inputList;
+        allCommands.input = inputList;
+        return true;
     }
 }
 
 
+//while (true) {
+//            pattern = Pattern.compile("^(show|set|find)+ " +
+//                    "(compan[ies,y]|favorite|stations by|price lists|my price lists)+" +
+//                    "( [A-Za-z0-9]*[, [A-Za-z0-9]*[A-Za-z0-9]+]*)?");
+//            matcher = pattern.matcher(input);
+//            if (matcher.matches()) {
+//                inputList.add(matcher.group(1));
+//                inputList.add(matcher.group(2));
+//                inputList.add(matcher.group(3));
+//                break;
+//            } else {
+//                System.out.println("Wrong enter!..");
+//                System.out.println("Use pattern: <command> <entity> <value(s)>");
+//            }
+//        }

@@ -21,17 +21,22 @@ public class SetFavoriteCompaniesCommand implements Command {
     public void execute() {
         System.out.println("setting F company");
     }
+
     public void execute(String value) {
         User user = sessionController.getCurrentUser();
-        StringTokenizer st = new StringTokenizer(value,", ");
+        StringTokenizer st = new StringTokenizer(value, ", ");
         ArrayList<String> companyNames = new ArrayList<>();
-        while (st.hasMoreTokens()){
+        while (st.hasMoreTokens()) {
             companyNames.add(st.nextToken());
         }
         for (String companyName : companyNames) {
             Criteria criteria = sessionController.getCriteria(Company.class);
             Company company = (Company) criteria.add(Restrictions.eq("company_name", companyName)).uniqueResult();
-            user.getCompanies().add(company);
+            if (company != null) {
+                user.getCompanies().add(company);
+            }else {
+                System.out.println("Company '"+companyName+"' doesn't exists");
+            }
         }
         sessionController.saveSession(user);
         System.out.println("Done.");
