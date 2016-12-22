@@ -27,4 +27,9 @@ public class ShowPriceListsOfFavoriteCompaniesCommand implements Command {
         }
     }
 
+    @Override
+    public void execute(String input) {
+
+    }
+
 }

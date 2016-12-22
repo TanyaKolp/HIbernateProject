@@ -22,4 +22,9 @@ public class ShowStationsCommand implements Command{
                 System.out.println("\t"+ gs.getStationNumber() + " - " + gs.getLocation().getAddress());
         }
     }
+
+    @Override
+    public void execute(String input) {
+
+    }
 }

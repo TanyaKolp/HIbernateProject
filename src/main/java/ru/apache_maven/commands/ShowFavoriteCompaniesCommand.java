@@ -20,4 +20,9 @@ public class ShowFavoriteCompaniesCommand implements Command {
             System.out.println(c.getCompany_id() + " -  " + c.getCompany_name());
         }
     }
+
+    @Override
+    public void execute(String input) {
+
+    }
 }

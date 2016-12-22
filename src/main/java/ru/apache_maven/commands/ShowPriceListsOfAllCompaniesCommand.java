@@ -28,4 +28,9 @@ public class ShowPriceListsOfAllCompaniesCommand implements Command {
             }
         }
     }
+
+    @Override
+    public void execute(String input) {
+
+    }
 }

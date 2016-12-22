@@ -7,4 +7,5 @@ import org.hibernate.Session;
  */
 public interface Command {
     public void execute();
+    public void execute(String input);
 }

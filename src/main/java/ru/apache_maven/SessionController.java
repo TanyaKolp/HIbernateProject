@@ -47,25 +47,6 @@ public class SessionController {
         return currentUser;
     }
 
-    public ArrayList<String> showTables() {
-        ArrayList<String> allTables = (ArrayList<String>) session.createSQLQuery("SHOW TABLES").list();
-        for (int i = 0; i < allTables.size(); i++) {
-            System.out.println(i + ".  " + allTables.get(i));
-        }
-        return allTables;
-    }
-
-    public ArrayList<String> showColumns(String tableName) {
-        ArrayList<String> columns = (ArrayList<String>) session.createSQLQuery("select COLUMN_NAME" +
-                " from information_schema.COLUMNS" +
-                " where TABLE_NAME='" + tableName + "'").list();
-        for (int i = 0; i < columns.size(); i++) {
-            System.out.println(i + ".  " + columns.get(i));
-
-        }
-        return columns;
-    }
-
     public boolean checkUser(String userLogin, String userPassword) {
         boolean exist = false;
         Criteria criteria = session.createCriteria(User.class);
@@ -84,10 +65,6 @@ public class SessionController {
             System.exit(0);
         }
         return exist;
-    }
-
-    public void addRow() {
-
     }
 
     public List show(Class clazz) {

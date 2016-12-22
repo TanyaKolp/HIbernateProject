@@ -14,26 +14,38 @@ public class AllCommands {
     public ArrayList<Command> commands = new ArrayList<Command>();
     public ArrayList<String> input;
     @Autowired
-    ShowCompaniesCommand showCompaniesCommand;
+    Command showCompaniesCommand;
     @Autowired
-    ShowStationsCommand showStationsCommand;
+    Command showStationsCommand;
     @Autowired
-    SetFavoriteCompaniesCommand setFavoriteCompaniesCommand;
+    Command setFavoriteCompaniesCommand;
     @Autowired
-    ShowPriceListsOfAllCompaniesCommand showPriceListsOfAllCompaniesCommand;
+    Command showPriceListsOfAllCompaniesCommand;
     @Autowired
-    ShowPriceListsOfFavoriteCompaniesCommand showPriceListsOfFavoriteCompaniesCommand;
+    Command showPriceListsOfFavoriteCompaniesCommand;
     @Autowired
-    FindStationsCommand findStationsCommand;
+    Command findStationsCommand;
     @Autowired
-    ShowFavoriteCompaniesCommand showFavoriteCompaniesCommand;
+    Command showFavoriteCompaniesCommand;
     @Autowired
-    ShowFavoriteStationsCommand showFavoriteStationsCommand;
+    Command showFavoriteStationsCommand;
     @Autowired
-    FindFavoriteStationsCommand findFavoriteStationsCommand;
+    Command findFavoriteStationsCommand;
+    @Autowired
+    Command addCompanyCommand;
+    @Autowired
+    Command addStationCommand;
+    @Autowired
+    Command addFuelTypeCommand;
+    @Autowired
+    Command deleteCompanyCommand;
+    @Autowired
+    Command deleteStationCommand;
+    @Autowired
+    Command deleteFuelTypeCommand;
+
 
     public void executeCommand() {
-
         switch (input.get(0)) {
             case "show":
                 if (input.get(1).equalsIgnoreCase("all")) {
@@ -69,6 +81,41 @@ public class AllCommands {
                 }
                 if (input.get(1).equalsIgnoreCase("station by"))
                     findStationsCommand.execute(input.get(2));
+                break;
+            default:
+                System.out.println("someth is wrong ");
+                break;
+        }
+    }
+
+    public void executeAdminCommand() {
+        switch (input.get(0)) {
+            case "create":
+                if (input.get(1).equalsIgnoreCase("company")) {
+                    addCompanyCommand.execute(input.get(2));
+                } else if (input.get(1).equalsIgnoreCase("station")) {
+                    addStationCommand.execute(input.get(2));
+                } else if (input.get(1).equalsIgnoreCase("fuelType")) {
+                    addFuelTypeCommand.execute(input.get(2));
+                }
+                break;
+            case "delete":
+                if (input.get(1).equalsIgnoreCase("company")) {
+                    deleteCompanyCommand.execute(input.get(2));
+                } else if (input.get(1).equalsIgnoreCase("station")) {
+                    deleteStationCommand.execute(input.get(2));
+                } else if (input.get(1).equalsIgnoreCase("fuelType")) {
+                    deleteFuelTypeCommand.execute(input.get(2));
+                }
+                break;
+            case "change":
+                if (input.get(1).equalsIgnoreCase("company")) {
+//                    changeCompanyCommand.execute(input.get(2));
+                } else if (input.get(1).equalsIgnoreCase("station")) {
+//                    changeStationCommand.execute(input.get(2));
+                } else if (input.get(1).equalsIgnoreCase("fuelType")) {
+//                    changeFuelTypeCommand.execute(input.get(2));
+                }
                 break;
             default:
                 System.out.println("someth is wrong ");

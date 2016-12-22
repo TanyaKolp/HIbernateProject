@@ -46,8 +46,8 @@ public class User {
     private String login;
     @Column(length = 20, nullable = false)
     private String password;
-    @Column
-    private Boolean admin;
+    @Column(nullable = false)
+    private Boolean admin = false;
 
     public Boolean isAdmin() {
         return admin;

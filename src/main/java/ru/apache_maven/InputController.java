@@ -23,7 +23,7 @@ public class InputController {
             "For 'set' command in this part you should print values, separated by ','\n" +
             "You can enter search terms in this part - print after keyword 'by' search criteria\n" +
             " (it could be 'road', 'city' or 'region') and then value, for example:\n" +
-            "'find my station by city Moscow'" ;
+            "'find my station by city Moscow'\n";
     SessionController sessionController = SessionController.getInstance();
     @Autowired
     AllCommands allCommands;
@@ -35,25 +35,124 @@ public class InputController {
     public void init() {
         getInfo();
         enter();
-        while (flag) {
+        while (true) {
+            System.out.println("Print command...");
+            input = sc.nextLine();
+            if (input.equalsIgnoreCase("admin")) {
+                if (sessionController.getCurrentUser().isAdmin()) {
+                    doAdminWork();
+                    flag = false;
+                } else {
+                    System.out.println("You have no rights!");
+                }
+            }
+            if (doUserWork()) {
+                break;
+            }
+            flag = true;
+        }
+        sessionController.commitTransaction();
+        sessionController.closeSession();
+    }
+
+
+    private void doAdminWork() {
+        while (true) {
+            while (true) {
+                System.out.println("Print admin command...");
+                input = sc.nextLine();
+                if (parseAdminInputString()) {
+                    break;
+                }
+            }
+            allCommands.executeAdminCommand();
+            System.out.println("Print 'end' to finish admin work, or press 'Enter' to continue");
+            String input = sc.nextLine();
+            if (input.equalsIgnoreCase("end")) {
+                break;
+            }
+        }
+    }
+    private boolean doUserWork(){
+        while (true) {
             while (true) {
                 System.out.println("Print command...");
                 input = sc.nextLine();
-                if (!parseInputString()) {
-                    continue;
-                } else {
+                if (parseInputString()) {
                     break;
                 }
             }
             allCommands.executeCommand();
-            System.out.println("Print 'end' to finish work, or press 'Enter' to continue");
+            System.out.println("Print 'end' to finish  work, or press 'Enter' to continue");
             String input = sc.nextLine();
             if (input.equalsIgnoreCase("end")) {
-                flag = false;
+                return true;
             }
         }
-        sessionController.commitTransaction();
-        sessionController.closeSession();
+    }
+
+    private boolean parseAdminInputString() {
+        ArrayList<String> inputList = new ArrayList<>();
+        Pattern pattern;
+        Matcher matcher;
+        String currentWord;
+        StringTokenizer st = new StringTokenizer(input);
+        if (st.countTokens() < 3) {
+            System.out.println("Wrong enter!");
+            System.out.println("Please, enter query again:");
+            return false;
+        } else {
+            //check first word
+            currentWord = st.nextToken();
+            pattern = Pattern.compile("(create|change|delete)");
+            matcher = pattern.matcher(currentWord);
+            if (matcher.matches()) {
+                inputList.add(currentWord);
+            } else {
+                System.out.println("Wrong command!");
+                System.out.println("Please, enter query again:");
+                return false;
+            }
+            //check second word
+            currentWord = st.nextToken();
+            pattern = Pattern.compile("(company|station|fuelType)");
+            matcher = pattern.matcher(currentWord);
+            if (matcher.matches()) {
+                inputList.add(currentWord);
+            } else {
+                System.out.println("Wrong second word!");
+                System.out.println("Please, enter query again:");
+                return false;
+            }
+            //check end of string
+            if (st.hasMoreTokens()) {
+                String[] strings = input.split(" ", 2);
+                strings = strings[1].split(" ", 2);
+                currentWord = strings[1];
+                if (currentWord.contains("set")) {
+                    st = new StringTokenizer(currentWord);
+                    currentWord = input.substring(currentWord.indexOf("set") + 4);
+                    pattern = Pattern.compile("(name|shop|cafe|location) [A-Za-z0-9]+" +
+                            "(, (name|shop|cafe|location) [A-Za-z0-9]+)*");
+                    matcher = pattern.matcher(currentWord);
+                    if (matcher.matches()) {
+                        inputList.add(currentWord);
+                    } else {
+                        System.out.println("Wrong enter! You should choose field - 'name', 'shop', 'cafe' or 'location'");
+                        System.out.println("Please, enter query again:");
+                        return false;
+                    }
+                } else {
+                    inputList.add(currentWord);
+                }
+            } else {
+                System.out.println("No key word value");
+                System.out.println("Please, enter query again:");
+                return false;
+            }
+        }
+        allCommands.input = inputList;
+        return true;
     }
 
     private void enter() {
@@ -164,7 +263,7 @@ public class InputController {
                 matcher = pattern.matcher(currentWord);
                 if (matcher.matches()) {
                     inputList.add(currentWord);
-                }else {
+                } else {
                     System.out.println("Wrong third word!");
                     System.out.println("Please, enter query again:");
                     return false;
@@ -174,18 +273,18 @@ public class InputController {
             if (st.hasMoreTokens()) {
                 currentWord = st.nextToken();
                 if (currentWord.equalsIgnoreCase("by")) {
-                    currentWord = input.substring(input.indexOf("by")+3);
+                    currentWord = input.substring(input.indexOf("by") + 3);
                     pattern = Pattern.compile("(city|region|road) [A-Za-z0-9]+" +
                             "(, (city|region|road) [A-Za-z0-9]+)*");
                     matcher = pattern.matcher(currentWord);
-                    if(matcher.matches()){
+                    if (matcher.matches()) {
                         inputList.add(currentWord);
-                    }else {
+                    } else {
                         System.out.println("Wrong enter! You should choose condition - 'city', 'region' or 'road'");
                         System.out.println("Please, enter query again:");
                         return false;
                     }
-                }else {
+                } else {
                     System.out.println("No key word 'by'");
                     System.out.println("Please, enter query again:");
                     return false;
