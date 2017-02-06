@@ -5,3 +5,4 @@
 src/test/
 target/
 gasstations.iml
+/src/main/java/ru/apache_maven/Main.java

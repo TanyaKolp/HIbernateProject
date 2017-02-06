@@ -1,5 +1,7 @@
 package ru.apache_maven.models;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
@@ -14,13 +16,13 @@ public class Company {
     }
 
     public Company(String company_name) {
-        this.company_name = company_name;
+        this.name = company_name;
     }
 
     @Id
     @Column(name = "company_id", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer company_id;
+    private Integer id;
 
     @ManyToMany(mappedBy = "companies", fetch = FetchType.EAGER)
     private Set<User> users;
@@ -31,23 +33,24 @@ public class Company {
     @OneToMany(mappedBy = "company")
     private List<FuelType> fuelTypes;
 
-    @Column(length = 20)
-    private String company_name;
+    @Column(name = "company_name", length = 20)
+    private String name;
 
-    public Integer getCompany_id() {
-        return company_id;
+
+    public Integer getId() {
+        return id;
     }
 
-    public void setCompany_id(Integer company_id) {
-        this.company_id = company_id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getCompany_name() {
-        return company_name;
+    public String getName() {
+        return name;
     }
 
-    public void setCompany_name(String company_name) {
-        this.company_name = company_name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<GasStation> getStations() {
@@ -72,5 +75,10 @@ public class Company {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public String toString() {
+        return id.toString() + " - " + name;
     }
 }

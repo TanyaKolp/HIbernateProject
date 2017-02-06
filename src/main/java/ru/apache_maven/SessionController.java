@@ -4,6 +4,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.apache_maven.models.User;
 
 import java.util.ArrayList;
@@ -13,78 +15,36 @@ import java.util.Objects;
 /**
  * Created by tania on 12/2/16.
  */
+@Component
 public class SessionController {
+    private SessionFactory sessionFactory;
+    private Session session;
+    private User currentUser = null;
 
-    SessionFactory sessionFactory = HibUtil.getSessionFactory();
-    Session session = sessionFactory.openSession();
-    public static SessionController instance = new SessionController();
-    User currentUser = null;
-
-    private SessionController() {
-        session.beginTransaction();
+    @Autowired
+    SessionController(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+        this.session = sessionFactory.openSession();
     }
 
-    public static SessionController getInstance() {
-        return instance;
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
-    public void commitTransaction() {
-        session.getTransaction().commit();
-    }
-    public Criteria getCriteria(Class clazz){
-        return session.createCriteria(clazz);
-    }
-    public void saveSession(Object o){
-        session.save(o);
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
-    public void closeSession() {
-        session.close();
-        sessionFactory.close();
+    public Session getSession() {
+        return session;
     }
 
     public User getCurrentUser() {
         return currentUser;
     }
 
-    public boolean checkUser(String userLogin, String userPassword) {
-        boolean exist = false;
-        Criteria criteria = session.createCriteria(User.class);
-        User user = (User) criteria.add(Restrictions.eq("login", userLogin)).uniqueResult();
-        this.currentUser = user;
-        if (user != null) {
-            if (user.getPassword().equalsIgnoreCase(userPassword)) {
-                System.out.println("welcome!");
-                exist = true;
-            } else {
-                System.out.println("Incorrect password!");
-            }
-        } else {
-            System.out.println("Please, sing up.");
-            closeSession();
-            System.exit(0);
-        }
-        return exist;
-    }
-
-    public List show(Class clazz) {
-        Criteria criteria = session.createCriteria(clazz);
-        ArrayList list = (ArrayList) criteria.list();
-        return list;
-    }
-
-    public boolean addUser(String userLogin, String userPassword) {
-        Criteria criteria = session.createCriteria(User.class);
-        User user = (User) criteria.add(Restrictions.eq("login", userLogin)).uniqueResult();
-        if (user == null) {
-            User newUser = new User(userLogin, userPassword);
-            session.save(newUser);
-            this.currentUser = newUser;
-            commitTransaction();
-            return true;
-        } else {
-            return false;
-        }
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 }
-

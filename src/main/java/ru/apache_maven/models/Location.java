@@ -1,5 +1,7 @@
 package ru.apache_maven.models;
 
+import org.hibernate.annotations.Cascade;
+import org.springframework.stereotype.Component;
 import ru.apache_maven.models.GasStation;
 
 import javax.persistence.*;
@@ -22,6 +24,7 @@ public class Location {
     private String address;
 
     @OneToOne(mappedBy = "location", fetch = FetchType.EAGER)
+    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     private GasStation gasStation;
 
     public String getAddress() {

@@ -1,5 +1,7 @@
 package ru.apache_maven.models;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 
 /**
@@ -11,12 +13,12 @@ public class GasStation {
     @Id
     @Column(name = "station_id", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer stationId;
+    private Integer id;
     @Column(name = "station_number")
-    private Integer stationNumber;
+    private Integer name;
     private Boolean shop;
+    @Column()
     private Boolean cafe;
-
 
     @ManyToOne
     @JoinColumn(name = "company_id")
@@ -34,20 +36,20 @@ public class GasStation {
         this.location = location;
     }
 
-    public Integer getStationId() {
-        return stationId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setStationId(Integer stationId) {
-        this.stationId = stationId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Integer getStationNumber() {
-        return stationNumber;
+    public Integer getName() {
+        return name;
     }
 
-    public void setStationNumber(Integer stationNumber) {
-        this.stationNumber = stationNumber;
+    public void setName(Integer name) {
+        this.name = name;
     }
 
     public Boolean getShop() {
@@ -72,5 +74,10 @@ public class GasStation {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    @Override
+    public String toString() {
+        return id.toString() + " - " + company.getName() + " - " + name + " - " ;
     }
 }

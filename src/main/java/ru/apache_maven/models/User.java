@@ -1,5 +1,6 @@
 package ru.apache_maven.models;
 
+import org.springframework.stereotype.Component;
 import ru.apache_maven.models.Company;
 
 import javax.persistence.*;
@@ -13,10 +14,12 @@ import java.util.Set;
 @Entity
 @Table(name = "Users")
 public class User {
-    public User(){}
+    public User() {
+    }
+
     public User(String login, String password) {
-        this.login =login;
-        this.password =password;
+        this.login = login;
+        this.password = password;
     }
 
 
@@ -30,7 +33,7 @@ public class User {
     @Id
     @Column(name = "user_id", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer user_id;
+    private Integer id;
 
     @ManyToMany
     @JoinTable(name = "FavoriteCompanies",
@@ -49,6 +52,18 @@ public class User {
     @Column(nullable = false)
     private Boolean admin = false;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Boolean getAdmin() {
+        return admin;
+    }
+
     public Boolean isAdmin() {
         return admin;
     }
@@ -57,16 +72,8 @@ public class User {
         this.admin = admin;
     }
 
-    public Integer getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
-    }
-
     public Set<Company> getCompanies() {
-        if(companies==null) {
+        if (companies == null) {
             companies = new HashSet<>();
         }
         return companies;
@@ -76,9 +83,9 @@ public class User {
         this.companies = companies;
     }
 
+    @Override
     public String toString() {
-        return getUser_id().toString() + "-" ;
-        //+ "-" + getCompany().getCompany_name();
+        return id.toString() + " - " + firstName + " - " + lastName;
     }
 
     public String getFirstName() {
@@ -113,8 +120,9 @@ public class User {
         this.password = password;
     }
 
-    public void setLoginAndPassword(String login,String password){
+    public void setLoginAndPassword(String login, String password) {
         this.login = login;
         this.password = password;
     }
+
 }

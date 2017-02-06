@@ -1,314 +1,161 @@
 package ru.apache_maven;
 
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.apache_maven.commands.Command;
+import ru.apache_maven.commands.Result;
 
+import java.io.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by tania on 12/1/16.
  */
 @Component
 public class InputController {
-    String info = "You can use 3 commands: set, find, show.\n" +
+    private String info = "You can use 3 commands: set, find, show.\n" +
             "Pattern: '<command> <first part> <second part>'\n" +
             "<command> can be 'set', 'find' or 'show'\n" +
             "<first part> can be 'all' or 'my' with 'find' and 'show' command and 'favorite' with 'set' command\n" +
             "'my' means use only your favorite companies, 'all' - all companies\n" +
-            "<second part> tels what you want to see.\n" +
+            "<second part> tells what you want to see.\n" +
             "For example, 'show all station' means print information about stations of all companies\n" +
             "For 'set' command in this part you should print values, separated by ','\n" +
             "You can enter search terms in this part - print after keyword 'by' search criteria\n" +
             " (it could be 'road', 'city' or 'region') and then value, for example:\n" +
             "'find my station by city Moscow'\n";
-    SessionController sessionController = SessionController.getInstance();
     @Autowired
-    AllCommands allCommands;
-    Scanner sc = new Scanner(System.in);
-    boolean flag = true;
-    String input;
+    private SessionController sessionController;
+    @Autowired
+    private InputInterpreter inputInterpreter;
+    private Scanner sc = new Scanner(System.in);
 
-
-    public void init() {
+    void init() {
+        ArrayList<String> inputArgs;
         getInfo();
         enter();
         while (true) {
-            System.out.println("Print command...");
-            input = sc.nextLine();
-            if (input.equalsIgnoreCase("admin")) {
-                if (sessionController.getCurrentUser().isAdmin()) {
-                    doAdminWork();
-                    flag = false;
+            System.out.println("\nPrint command:");
+            String input = sc.nextLine();
+            if (input.equalsIgnoreCase("end")) {
+                System.out.println("Bye.");
+                break;
+            }
+            System.out.println("Working...");
+            inputArgs = new ArrayList<String>(Arrays.asList(input.split(" ")));
+            try {
+                if (inputArgs.get(0).equalsIgnoreCase("file")) {
+                    executeFromFile(inputArgs.get(1));
                 } else {
-                    System.out.println("You have no rights!");
-                }
-            }
-            if (doUserWork()) {
-                break;
-            }
-            flag = true;
-        }
-        sessionController.commitTransaction();
-        sessionController.closeSession();
-    }
-
-
-    private void doAdminWork() {
-        while (true) {
-            while (true) {
-                System.out.println("Print admin command...");
-                input = sc.nextLine();
-                if (parseAdminInputString()) {
-                    break;
-                }
-            }
-            allCommands.executeAdminCommand();
-            System.out.println("Print 'end' to finish admin work, or press 'Enter' to continue");
-            String input = sc.nextLine();
-            if (input.equalsIgnoreCase("end")) {
-                break;
-            }
-        }
-    }
-    private boolean doUserWork(){
-        while (true) {
-            while (true) {
-                System.out.println("Print command...");
-                input = sc.nextLine();
-                if (parseInputString()) {
-                    break;
-                }
-            }
-            allCommands.executeCommand();
-            System.out.println("Print 'end' to finish  work, or press 'Enter' to continue");
-            String input = sc.nextLine();
-            if (input.equalsIgnoreCase("end")) {
-                return true;
-            }
-        }
-    }
-
-    private boolean parseAdminInputString() {
-        ArrayList<String> inputList = new ArrayList<>();
-        Pattern pattern;
-        Matcher matcher;
-        String currentWord;
-        StringTokenizer st = new StringTokenizer(input);
-        if (st.countTokens() < 3) {
-            System.out.println("Wrong enter!");
-            System.out.println("Please, enter query again:");
-            return false;
-        } else {
-            //check first word
-            currentWord = st.nextToken();
-            pattern = Pattern.compile("(create|change|delete)");
-            matcher = pattern.matcher(currentWord);
-            if (matcher.matches()) {
-                inputList.add(currentWord);
-            } else {
-                System.out.println("Wrong command!");
-                System.out.println("Please, enter query again:");
-                return false;
-            }
-            //check second word
-            currentWord = st.nextToken();
-            pattern = Pattern.compile("(company|station|fuelType)");
-            matcher = pattern.matcher(currentWord);
-            if (matcher.matches()) {
-                inputList.add(currentWord);
-            } else {
-                System.out.println("Wrong second word!");
-                System.out.println("Please, enter query again:");
-                return false;
-            }
-            //check end of string
-            if (st.hasMoreTokens()) {
-                String[] strings = input.split(" ", 2);
-                strings = strings[1].split(" ", 2);
-                currentWord = strings[1];
-                if (currentWord.contains("set")) {
-                    st = new StringTokenizer(currentWord);
-                    currentWord = input.substring(currentWord.indexOf("set") + 4);
-                    pattern = Pattern.compile("(name|shop|cafe|location) [A-Za-z0-9]+" +
-                            "(, (name|shop|cafe|location) [A-Za-z0-9]+)*");
-                    matcher = pattern.matcher(currentWord);
-                    if (matcher.matches()) {
-                        inputList.add(currentWord);
-                    } else {
-                        System.out.println("Wrong enter! You should choose field - 'name', 'shop', 'cafe' or 'location'");
-                        System.out.println("Please, enter query again:");
-                        return false;
+                    Result result = inputInterpreter.executeCommand(inputArgs);
+                    printMessages(result);
+                    if (result.getHelp() != null) {
+                        System.out.println(result.getHelp());
                     }
-                } else {
-                    inputList.add(currentWord);
                 }
-            } else {
-                System.out.println("No key word value");
-                System.out.println("Please, enter query again:");
-                return false;
+            } catch (HibernateException e) {
+                e.printStackTrace();
+                sessionController.getSession().getTransaction().rollback();
+                System.out.println("INTERNAL ERROR! Application will be stopped.");
+                break;
             }
         }
-        allCommands.input = inputList;
-        return true;
+        sessionController.getSession().close();
+        sessionController.getSessionFactory().close();
+    }
+
+    private boolean executeFromFile(String path) {
+        ArrayList<String> inputArgs;
+        int lineCount = 0;
+        File file = new File(path);
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            String line;
+            while ((line = br.readLine()) != null) { // метод readline построчное чтение
+                lineCount++;
+                inputArgs = new ArrayList<String>(Arrays.asList(line.split(" ")));
+                Result result = inputInterpreter.executeCommand(inputArgs);
+                if (result.isSuccess()) {
+                    System.out.println("Line #" + lineCount + ": ");
+                    printInLineMessages(result);
+                } else {
+                    System.out.println("ERROR! Line #" + lineCount + ": ");
+                    printInLineMessages(result);
+                    if (result.getHelp() != null) {
+                        System.out.print("  "+result.getHelp());
+                    }
+                }
+            }
+            return true;
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void printMessages(Result result) {
+        System.out.println();
+        if (result.getMessages() != null) {
+            for (String s : result.getMessages()) {
+                System.out.println(s);
+            }
+        }
+    }
+    private void printInLineMessages(Result result) {
+        if (result.getMessages() != null) {
+            for (String s : result.getMessages()) {
+                System.out.print(s);
+            }
+        }
     }
 
     private void enter() {
-        System.out.println("1. Log in\n2.Sing up");
-        int input = getAndCheckNumberInput();
-        switch (input) {
-            case 1:
-                while (true) {
-                    System.out.println("Enter login:");
-                    String login = sc.nextLine();
-                    System.out.println("Enter password:");
-                    String password = sc.nextLine();
-                    if (sessionController.checkUser(login, password)) {
-                        break;
-                    } else {
-                        System.out.println("Try again.");
-                    }
-                }
+        ArrayList<String> inputArgs;
+        while (true) {
+            inputArgs = new ArrayList<>();
+            System.out.println("1. Log in\n2.Sing up");
+            String input = getAndCheckNumberInput();
+            inputArgs.add(input);
+            System.out.print("Enter login: ");
+            String login = sc.nextLine();
+            inputArgs.add(login);
+            System.out.print("Enter password: ");
+            String password = sc.nextLine();
+            inputArgs.add(password);
+            Result result = inputInterpreter.executeCommand(inputArgs);
+            if (result.isSuccess()) {
                 break;
-            case 2:
-                while (true) {
-                    System.out.println("Enter your login:");
-                    String login = sc.nextLine();
-                    System.out.println("Enter your password:");
-                    String password = sc.nextLine();
-                    if (sessionController.addUser(login, password)) {
-                        break;
-                    }
-                    System.out.println("This login is busy.");
-                }
-                break;
-            default:
-                System.out.println("Wrong enter! Choose 1 or 2. ");
-                System.exit(0);
-                break;
+            } else {
+                System.out.println(result.getMessages());
+                System.out.println("Try again.");
+            }
         }
     }
 
-
-    public Integer getAndCheckNumberInput() {
-        Integer input = null;
+    private String getAndCheckNumberInput() {
+        String userChoice = null;
         try {
-            input = sc.nextInt();
+            int input = sc.nextInt();
+            if (input == 1) {
+                userChoice = "logIn";
+            } else if (input == 2) {
+                userChoice = "singUp";
+            } else {
+                return null;
+            }
         } catch (InputMismatchException e) {
-            System.out.println("Wrong enter!..");
+            System.out.println("Wrong enter! Not a number");
         }
         sc.nextLine();
-        return input;
-    }
-
-    public ArrayList<String> getLinesInput() {
-        ArrayList<String> data = new ArrayList<>();
-        while (true) {
-
-            String nextLine;
-            nextLine = sc.nextLine();
-            if (nextLine.equalsIgnoreCase("")) {
-                break;
-            }
-            data.add(nextLine);
-        }
-        return data;
+        return userChoice;
     }
 
     public void getInfo() {
         System.out.println(info);
     }
-
-    public boolean parseInputString() {
-        ArrayList<String> inputList = new ArrayList<>();
-        Pattern pattern;
-        Matcher matcher;
-        String currentWord;
-        StringTokenizer st = new StringTokenizer(input);
-        if (st.countTokens() < 3) {
-            System.out.println("Wrong enter!");
-            System.out.println("Please, enter query again:");
-            return false;
-        } else {
-            //check first word
-            currentWord = st.nextToken();
-            pattern = Pattern.compile("(set|find|show)");
-            matcher = pattern.matcher(currentWord);
-            if (matcher.matches()) {
-                inputList.add(currentWord);
-            } else {
-                System.out.println("Wrong command!");
-                System.out.println("Please, enter query again:");
-                return false;
-            }
-            //check second word
-            currentWord = st.nextToken();
-            pattern = Pattern.compile("(all|my|favorite|firstName|lastName)");
-            matcher = pattern.matcher(currentWord);
-            if (matcher.matches()) {
-                inputList.add(currentWord);
-            } else {
-                System.out.println("Wrong second word!");
-                System.out.println("Please, enter query again:");
-                return false;
-            }
-            //check third word
-            currentWord = st.nextToken();
-            if (inputList.get(0).equalsIgnoreCase("set")) {
-                inputList.add(currentWord);
-            } else {
-                pattern = Pattern.compile("(company|priceList|station)");
-                matcher = pattern.matcher(currentWord);
-                if (matcher.matches()) {
-                    inputList.add(currentWord);
-                } else {
-                    System.out.println("Wrong third word!");
-                    System.out.println("Please, enter query again:");
-                    return false;
-                }
-            }
-            //check end of string
-            if (st.hasMoreTokens()) {
-                currentWord = st.nextToken();
-                if (currentWord.equalsIgnoreCase("by")) {
-                    currentWord = input.substring(input.indexOf("by") + 3);
-                    pattern = Pattern.compile("(city|region|road) [A-Za-z0-9]+" +
-                            "(, (city|region|road) [A-Za-z0-9]+)*");
-                    matcher = pattern.matcher(currentWord);
-                    if (matcher.matches()) {
-                        inputList.add(currentWord);
-                    } else {
-                        System.out.println("Wrong enter! You should choose condition - 'city', 'region' or 'road'");
-                        System.out.println("Please, enter query again:");
-                        return false;
-                    }
-                } else {
-                    System.out.println("No key word 'by'");
-                    System.out.println("Please, enter query again:");
-                    return false;
-                }
-            }
-        }
-        allCommands.input = inputList;
-        return true;
-    }
 }
-
-
-//while (true) {
-//            pattern = Pattern.compile("^(show|set|find)+ " +
-//                    "(compan[ies,y]|favorite|stations by|price lists|my price lists)+" +
-//                    "( [A-Za-z0-9]*[, [A-Za-z0-9]*[A-Za-z0-9]+]*)?");
-//            matcher = pattern.matcher(input);
-//            if (matcher.matches()) {
-//                inputList.add(matcher.group(1));
-//                inputList.add(matcher.group(2));
-//                inputList.add(matcher.group(3));
-//                break;
-//            } else {
-//                System.out.println("Wrong enter!..");
-//                System.out.println("Use pattern: <command> <entity> <value(s)>");
-//            }
-//        }
