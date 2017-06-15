@@ -1,18 +1,11 @@
 package ru.apache_maven.commands;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.criterion.Restrictions;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.apache_maven.SessionController;
-import ru.apache_maven.models.Company;
-import ru.apache_maven.models.FuelType;
-import ru.apache_maven.models.GasStation;
-import ru.apache_maven.models.Location;
 
 import javax.inject.Named;
-import java.io.*;
 import java.util.*;
 
 /**
@@ -21,6 +14,7 @@ import java.util.*;
 @Component
 @Named("create")
 public class CreateCommand implements Command {
+    Logger logger = Logger.getLogger(CreateCommand.class);
     @Autowired
     private SessionController sessionController;
     private String help = "After word 'create' print:\n" +
@@ -38,12 +32,8 @@ public class CreateCommand implements Command {
     }
 
     @Override
-    public void execute() {
-
-    }
-
-    @Override
     public Result execute(List<String> input) {
+        logger.info("creating..");
         Creation currentCommand;
         Result result = new Result();
         ArrayList<String> messages = new ArrayList<String>();
