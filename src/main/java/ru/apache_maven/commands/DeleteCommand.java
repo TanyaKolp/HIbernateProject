@@ -1,5 +1,6 @@
 package ru.apache_maven.commands;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +8,12 @@ import org.springframework.stereotype.Component;
 import ru.apache_maven.SessionController;
 import ru.apache_maven.models.Company;
 import ru.apache_maven.models.FuelType;
-import ru.apache_maven.models.User;
 
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by tania on 12/22/16.
@@ -22,6 +21,7 @@ import java.util.Set;
 @Component
 @Named("delete")
 public class DeleteCommand implements Command {
+    Logger logger = Logger.getLogger(DeleteCommand.class);
     private String help = "\nAfter word 'delete' print:\n" +
             "1) delete what\n2) value\n" +
             "\t1. favorite (means favorite companies), fuelType\n" +
@@ -35,11 +35,6 @@ public class DeleteCommand implements Command {
     public DeleteCommand() {
         entityTypeMap.put("fuelType", FuelType.class);
         entityTypeMap.put("company", Company.class);
-    }
-
-    @Override
-    public void execute() {
-
     }
 
     @Override

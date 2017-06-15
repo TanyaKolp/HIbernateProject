@@ -1,5 +1,6 @@
 package ru.apache_maven;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,17 +14,12 @@ import java.util.*;
  */
 @Component
 public class InputController {
-    private String info = "You can use 3 commands: set, find, show.\n" +
-            "Pattern: '<command> <first part> <second part>'\n" +
-            "<command> can be 'set', 'find' or 'show'\n" +
-            "<first part> can be 'all' or 'my' with 'find' and 'show' command and 'favorite' with 'set' command\n" +
-            "'my' means use only your favorite companies, 'all' - all companies\n" +
-            "<second part> tells what you want to see.\n" +
-            "For example, 'show all station' means print information about stations of all companies\n" +
-            "For 'set' command in this part you should print values, separated by ','\n" +
-            "You can enter search terms in this part - print after keyword 'by' search criteria\n" +
-            " (it could be 'road', 'city' or 'region') and then value, for example:\n" +
-            "'find my station by city Moscow'\n";
+    Logger logger = Logger.getLogger(InputController.class);
+
+    private String info = "Please, sing up or log in first.\n" +
+            "Then you can use commands below. Print <command> and press 'Enter', then " +
+            "follow the further instructions.\n " +
+            "Print 'end' to finish work.";
     @Autowired
     private SessionController sessionController;
     @Autowired
@@ -57,6 +53,7 @@ public class InputController {
                 e.printStackTrace();
                 sessionController.getSession().getTransaction().rollback();
                 System.out.println("INTERNAL ERROR! Application will be stopped.");
+                logger.fatal("DB error.",e);
                 break;
             }
         }
@@ -65,6 +62,7 @@ public class InputController {
     }
 
     private boolean executeFromFile(String path) {
+        logger.info("executing from file..");
         ArrayList<String> inputArgs;
         int lineCount = 0;
         File file = new File(path);
@@ -73,6 +71,7 @@ public class InputController {
             fis = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String line;
+            logger.info("file was successfully opened");
             while ((line = br.readLine()) != null) { // метод readline построчное чтение
                 lineCount++;
                 inputArgs = new ArrayList<String>(Arrays.asList(line.split(" ")));
@@ -84,13 +83,18 @@ public class InputController {
                     System.out.println("ERROR! Line #" + lineCount + ": ");
                     printInLineMessages(result);
                     if (result.getHelp() != null) {
-                        System.out.print("  "+result.getHelp());
+                        System.out.print("  " + result.getHelp());
                     }
                 }
             }
+            fis.close();
+            logger.info("file was successfully closed");
+            br.close();
+
             return true;
         } catch (FileNotFoundException e) {
             System.out.println("File not found.");
+            logger.error("file not found");
             return false;
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,6 +110,7 @@ public class InputController {
             }
         }
     }
+
     private void printInLineMessages(Result result) {
         if (result.getMessages() != null) {
             for (String s : result.getMessages()) {
@@ -118,7 +123,7 @@ public class InputController {
         ArrayList<String> inputArgs;
         while (true) {
             inputArgs = new ArrayList<>();
-            System.out.println("1. Log in\n2.Sing up");
+            System.out.println("\n1. Log in\n2.Sing up");
             String input = getAndCheckNumberInput();
             inputArgs.add(input);
             System.out.print("Enter login: ");
@@ -157,5 +162,7 @@ public class InputController {
 
     public void getInfo() {
         System.out.println(info);
+        System.out.println("List of commands: ");
+        System.out.print(inputInterpreter.getHelp());
     }
 }

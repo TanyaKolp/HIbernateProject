@@ -1,7 +1,6 @@
 package ru.apache_maven.commands;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import ru.apache_maven.models.User;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by tania on 12/17/16.
@@ -28,11 +26,6 @@ public class SetCommand implements Command {
     @Autowired
     SessionController sessionController;
     private ArrayList<String> messages;
-
-    @Override
-    public void execute() {
-        System.out.println("setting F company");
-    }
 
     @Override
     public Result execute(List<String> input) {

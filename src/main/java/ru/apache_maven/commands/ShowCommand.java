@@ -1,5 +1,6 @@
 package ru.apache_maven.commands;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.apache_maven.SessionController;
@@ -18,6 +19,7 @@ import java.util.List;
 @Component
 @Named("show")
 public class ShowCommand implements Command {
+    Logger logger = Logger.getLogger(ShowCommand.class);
     @Autowired
     SessionController sessionController ;
     private String help = "After word 'show' print:\n" +
@@ -27,16 +29,12 @@ public class ShowCommand implements Command {
 
 
     @Override
-    public void execute() {
-
-    }
-
-    @Override
     public Result execute(List<String> args) {
         Result result = new Result();
         ArrayList<String> messages = new ArrayList<>();
         try {
             sessionController.getSession().beginTransaction();
+            logger.info("Transaction begin");
             if (args.size() == 2) {
                 if (identifyEntity(args,messages)) {
                     result.setSuccess(true);
@@ -51,6 +49,7 @@ public class ShowCommand implements Command {
                 messages.add("ERROR! Not enough arguments.");
             }
             sessionController.getSession().getTransaction().commit();
+            logger.info("Transaction commit.");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,7 +2,6 @@ package ru.apache_maven.commands;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,11 +20,6 @@ import java.util.List;
 public class LogInCommand implements Command {
     @Autowired
     private SessionController sessionController;
-
-    @Override
-    public void execute() {
-
-    }
 
     @Override
     public Result execute(List<String> inputArgs) {

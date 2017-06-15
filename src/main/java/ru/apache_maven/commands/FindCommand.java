@@ -1,14 +1,11 @@
 package ru.apache_maven.commands;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.apache_maven.SessionController;
 import ru.apache_maven.models.Company;
 import ru.apache_maven.models.GasStation;
-import ru.apache_maven.models.Location;
 
 import javax.inject.Named;
 import java.util.*;
@@ -28,11 +25,6 @@ public class FindCommand implements Command {
             "\t1. all or my\n" +
             "\t3. city, region or road\n";
     private ArrayList<String> messages;
-
-    @Override
-    public void execute() {
-
-    }
 
     @Override
     public Result execute(List<String> input) {

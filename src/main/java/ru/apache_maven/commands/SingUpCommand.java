@@ -20,10 +20,6 @@ import java.util.List;
 public class SingUpCommand implements Command {
     @Autowired
     SessionController sessionController ;
-    @Override
-    public void execute() {
-
-    }
 
     @Override
     public Result execute(List<String> input) {
