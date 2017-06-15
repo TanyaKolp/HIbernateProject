@@ -21,7 +21,7 @@ import java.util.List;
 public class ShowCommand implements Command {
     Logger logger = Logger.getLogger(ShowCommand.class);
     @Autowired
-    SessionController sessionController ;
+    SessionController sessionController;
     private String help = "After word 'show' print:\n" +
             "1) show all or only favorite?\n2) what to show\n" +
             "1. all or my\n" +
@@ -36,7 +36,7 @@ public class ShowCommand implements Command {
             sessionController.getSession().beginTransaction();
             logger.info("Transaction begin");
             if (args.size() == 2) {
-                if (identifyEntity(args,messages)) {
+                if (identifyEntity(args, messages)) {
                     result.setSuccess(true);
                     messages.add("Done.");
                 } else {
@@ -64,20 +64,20 @@ public class ShowCommand implements Command {
 
     private boolean identifyEntity(List<String> args, ArrayList<String> messages) {
         String entity = args.get(1);
-        Collection<Company> companies = getCompanies(args.get(0),messages);
+        Collection<Company> companies = getCompanies(args.get(0), messages);
         switch (entity) {
             case "company":
-                if (showCompanies(companies,messages)) {
+                if (showCompanies(companies, messages)) {
                     return true;
                 }
                 break;
             case "priceList":
-                if (showPriceListsOfCompanies(companies,messages)) {
+                if (showPriceListsOfCompanies(companies, messages)) {
                     return true;
                 }
                 break;
             case "station":
-                if (showStations(companies,messages)) {
+                if (showStations(companies, messages)) {
                     return true;
                 }
                 break;
@@ -88,7 +88,7 @@ public class ShowCommand implements Command {
     }
 
 
-    private Collection<Company> getCompanies(String arg,  ArrayList<String> messages) {
+    private Collection<Company> getCompanies(String arg, ArrayList<String> messages) {
         Collection<Company> companies = null;
         if (arg.equalsIgnoreCase("all")) {
             companies = (ArrayList<Company>) sessionController.getSession().createCriteria(Company.class).list();
@@ -116,9 +116,14 @@ public class ShowCommand implements Command {
             return false;
         }
         for (Company company : companies) {
-            messages.add(company.getName());
-            for (GasStation gs : company.getStations())
-                messages.add("\t" + gs.getName() + " - " + gs.getLocation().getAddress());
+            messages.add(company.getName() + ": " + company.getStations().size() + " stations");
+            for (GasStation gs : company.getStations()) {
+                if (gs.getLocation() != null) {
+                    messages.add("\t" + gs.getName() + " - " + gs.getLocation().getAddress());
+                } else {
+                    messages.add("\t" + gs.getName() + " - " + "no address information");
+                }
+            }
         }
         return true;
     }
