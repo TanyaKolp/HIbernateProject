@@ -4,6 +4,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.apache_maven.SessionController;
 import ru.apache_maven.models.Company;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Component
 @Named("company")
+@Qualifier
 public class CreateCompanyCommand implements Creation {
     @Autowired
     SessionController sessionController;

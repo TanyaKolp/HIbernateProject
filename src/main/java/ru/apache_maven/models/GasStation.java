@@ -7,6 +7,7 @@ import javax.persistence.*;
 /**
  * Created by tania on 11/21/16.
  */
+
 @Entity
 @Table(name = "GasStations")
 public class GasStation {

@@ -33,6 +33,11 @@ public class InputController {
         while (true) {
             System.out.println("\nPrint command:");
             String input = sc.nextLine();
+            if(input.isEmpty()){
+                System.out.println("List of commands: ");
+                System.out.print(inputInterpreter.getHelp());
+                continue;
+            }
             if (input.equalsIgnoreCase("end")) {
                 System.out.println("Bye.");
                 break;
@@ -90,7 +95,6 @@ public class InputController {
             fis.close();
             logger.info("file was successfully closed");
             br.close();
-
             return true;
         } catch (FileNotFoundException e) {
             System.out.println("File not found.");
@@ -132,7 +136,7 @@ public class InputController {
             System.out.print("Enter password: ");
             String password = sc.nextLine();
             inputArgs.add(password);
-            Result result = inputInterpreter.executeCommand(inputArgs);
+            Result result = inputInterpreter.authorize(inputArgs);
             if (result.isSuccess()) {
                 break;
             } else {

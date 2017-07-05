@@ -17,12 +17,12 @@ import java.util.List;
  */
 @Component
 @Named("singUp")
-public class SingUpCommand implements Command {
+public class SingUpCommand implements Authorization {
     @Autowired
     SessionController sessionController ;
 
     @Override
-    public Result execute(List<String> input) {
+    public Result authorize(List<String> input) {
         Result result = new Result();
         ArrayList<String> messages = new ArrayList<>();
         try {
@@ -47,10 +47,5 @@ public class SingUpCommand implements Command {
         }
         result.setMessages(messages);
         return result;
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 }

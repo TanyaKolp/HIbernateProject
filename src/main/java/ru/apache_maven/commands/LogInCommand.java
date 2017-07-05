@@ -17,12 +17,12 @@ import java.util.List;
  */
 @Component
 @Named("logIn")
-public class LogInCommand implements Command {
+public class LogInCommand implements Authorization {
     @Autowired
     private SessionController sessionController;
 
     @Override
-    public Result execute(List<String> inputArgs) {
+    public Result authorize(List<String> inputArgs) {
         Result result = new Result();
         ArrayList<String> messages = new ArrayList<>();
         try {
@@ -52,10 +52,4 @@ public class LogInCommand implements Command {
         }
         return result;
     }
-
-    @Override
-    public String getHelp() {
-        return null;
-    }
-
 }

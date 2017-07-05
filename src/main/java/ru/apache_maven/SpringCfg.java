@@ -33,21 +33,4 @@ public class SpringCfg {
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
         return cfg.buildSessionFactory(builder.build());
     }
-
-//    @Bean(name = "commands_2")
-//    public Map<String, Command> getCommands() {
-//        HashMap<String, Command> commands = new HashMap<>();
-//        commands.put("null", new Command() {
-//            @Override
-//            public void execute() {
-//
-//            }
-//
-//            @Override
-//            public void execute(String input) {
-//
-//            }
-//        });
-//        return commands;
-//    }
 }

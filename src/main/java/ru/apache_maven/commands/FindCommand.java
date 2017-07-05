@@ -104,7 +104,10 @@ public class FindCommand implements Command {
             return false;
         }
         Collection<Company> companies = getCompanies(firstArg);
-        ArrayList<String> foundStations =   new ArrayList<>();
+        if (companies == null) {
+            return false;
+        }
+        ArrayList<String> foundStations = new ArrayList<>();
         Boolean found = null;
         for (Company company : companies) {
             List<GasStation> gasStations = company.getStations();

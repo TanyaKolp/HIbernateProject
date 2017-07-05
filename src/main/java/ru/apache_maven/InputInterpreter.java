@@ -15,11 +15,14 @@ import java.util.Set;
 @Component
 public class InputInterpreter {
     private final Map<String, Command> commands;
+    private final Map<String, Authorization> authorization;
     Logger logger = Logger.getLogger(InputInterpreter.class);
 
     @Autowired
-    private InputInterpreter(Map<String, Command> commands) {
+    private InputInterpreter(Map<String, Command> commands,
+                             Map<String, Authorization> authorization) {
         this.commands = commands;
+        this.authorization = authorization;
     }
 
     private Map<String, Command> getCommands() {
@@ -39,7 +42,7 @@ public class InputInterpreter {
             messages.add("NO SUCH COMMAND! Choose one of these commands: ");
             result.setHelp(getHelp());
             result.setMessages(messages);
-            logger.error("NO SUCH COMMAND:" + input.get(0));
+            logger.error("NO SUCH COMMAND:" );
         }
         return result;
     }
@@ -54,4 +57,20 @@ public class InputInterpreter {
         string += keyArray[keyArray.length - 1];
         return string;
     }
+
+    public Result authorize(ArrayList<String> input) {
+        Result result;
+        Authorization authorizeCommand = authorization.get(input.get(0));
+        ArrayList<String> messages = new ArrayList<>();
+        input.remove(0);
+        if (authorizeCommand != null) {
+            result = authorizeCommand.authorize(input);
+        } else {
+            result = new Result();
+            result.setSuccess(false);
+            messages.add("Authorization failed");
+            result.setMessages(messages);
+            logger.error("Authorization failed" );
+        }
+        return result;    }
 }
