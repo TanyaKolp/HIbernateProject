@@ -11,8 +11,9 @@ import java.util.*;
 /**
  * Created by tania on 24.01.17.
  */
-@Component
-@Named("create")
+@Component("create")
+//@Named("create")
+//@ComponentByEnum(CommandEnum.CREATE)
 public class CreateCommand implements Command {
     Logger logger = Logger.getLogger(CreateCommand.class);
     @Autowired

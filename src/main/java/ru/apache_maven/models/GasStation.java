@@ -49,7 +49,7 @@ public class GasStation {
         return name;
     }
 
-    public void setName(Integer name) {
+    public void     setName(Integer name) {
         this.name = name;
     }
 

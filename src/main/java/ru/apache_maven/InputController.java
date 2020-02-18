@@ -124,7 +124,7 @@ public class InputController {
     }
 
     private void enter() {
-        ArrayList<String> inputArgs;
+        List<String> inputArgs;
         while (true) {
             inputArgs = new ArrayList<>();
             System.out.println("\n1. Log in\n2.Sing up");

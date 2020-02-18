@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.apache_maven.commands.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +33,9 @@ public class InputInterpreter {
     public Result executeCommand(ArrayList<String> input) {
         Result result;
         Command command = commands.get(input.get(0));
+        String value = CommandEnum.CREATE.getValue();
+        CommandEnum commandEnum = CommandEnum.fromValue(input.get(0));
+//        System.out.println("Command enum: "+ commandEnum.getValue());
         ArrayList<String> messages = new ArrayList<>();
         input.remove(0);
         if (command != null) {
@@ -58,10 +62,10 @@ public class InputInterpreter {
         return string;
     }
 
-    public Result authorize(ArrayList<String> input) {
+    public Result authorize(List<String> input) {
         Result result;
         Authorization authorizeCommand = authorization.get(input.get(0));
-        ArrayList<String> messages = new ArrayList<>();
+        List<String> messages = new ArrayList<>();
         input.remove(0);
         if (authorizeCommand != null) {
             result = authorizeCommand.authorize(input);

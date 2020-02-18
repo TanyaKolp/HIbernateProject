@@ -1,16 +1,16 @@
 package ru.apache_maven.commands;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tania on 30.01.17.
  */
 public class Result {
     private boolean success;
-    private ArrayList<String> messages;
+    private List<String> messages;
     private String help;
     private String errorMessage;
-    private ArrayList<String> resultMessage;
+    private List<String> resultMessage;
 
     public String getHelp() {
         return help;
@@ -20,19 +20,19 @@ public class Result {
         this.help = help;
     }
 
-    public ArrayList<String> getMessages() {
+    public List<String> getMessages() {
         return messages;
     }
 
-    public void setMessages(ArrayList<String> messages) {
+    public void setMessages(List<String> messages) {
         this.messages = messages;
     }
 
-    public ArrayList<String> getResultMessage() {
+    public List<String> getResultMessage() {
         return resultMessage;
     }
 
-    public void setResultMessage(ArrayList<String> resultMessage) {
+    public void setResultMessage(List<String> resultMessage) {
         this.resultMessage = resultMessage;
     }
 

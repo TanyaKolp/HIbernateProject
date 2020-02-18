@@ -6,9 +6,12 @@ import org.springframework.stereotype.Component;
 import ru.apache_maven.SessionController;
 import ru.apache_maven.models.Company;
 import ru.apache_maven.models.GasStation;
+import ru.apache_maven.models.Location;
 
 import javax.inject.Named;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by tania on 31.01.17.
@@ -24,7 +27,7 @@ public class FindCommand implements Command {
             "1) find all or only favorite?\n2) 'station by'\n3) by what?\n4) value\n" +
             "\t1. all or my\n" +
             "\t3. city, region or road\n";
-    private ArrayList<String> messages;
+    private List<String> messages;
 
     @Override
     public Result execute(List<String> input) {
@@ -62,12 +65,12 @@ public class FindCommand implements Command {
         return this.help;
     }
 
-    private Collection<Company> getCompanies(String arg) {
-        Collection<Company> companies = null;
+    private List<Company> getCompanies(String arg) {
+        List<Company> companies = null;
         if (arg.equalsIgnoreCase("all")) {
-            companies = (ArrayList<Company>) sessionController.getSession().createCriteria(Company.class).list();
+            companies = sessionController.getSession().createCriteria(Company.class).list();
         } else if (arg.equalsIgnoreCase("my")) {
-            companies = sessionController.getCurrentUser().getCompanies();
+            companies = new ArrayList<>(sessionController.getCurrentUser().getCompanies());
         } else {
             messages.add("ERROR! Wrong argument. Choose 'all' or 'my'");
         }
@@ -103,14 +106,15 @@ public class FindCommand implements Command {
         if (conditions == null) {
             return false;
         }
-        Collection<Company> companies = getCompanies(firstArg);
+        List<Company> companies = getCompanies(firstArg);
         if (companies == null) {
             return false;
         }
-        ArrayList<String> foundStations = new ArrayList<>();
+        List<String> foundStations = new ArrayList<>();
         Boolean found = null;
         for (Company company : companies) {
             List<GasStation> gasStations = company.getStations();
+
             for (GasStation gs : gasStations) {
                 for (String key : conditions.keySet()) {
                     String[] criterion = {key, conditions.get(key)};
@@ -124,6 +128,9 @@ public class FindCommand implements Command {
                 }
             }
         }
+        GasStation gasStation = new GasStation();
+        gasStation.setName(666);
+        companies.get(0).getStations().add(gasStation);
         if (!foundStations.isEmpty()) {
             messages = foundStations;
         } else {
@@ -133,15 +140,12 @@ public class FindCommand implements Command {
     }
 
     private Boolean checkConditions(String[] criterion, GasStation gs) {
+        Location location = gs.getLocation();
         switch (criterion[0]) {
             case "road":
-                if (criterion[1].equalsIgnoreCase(gs.getLocation().getRoadNumber())) return true;
-                break;
             case "region":
-                if (criterion[1].equalsIgnoreCase(gs.getLocation().getRegion())) return true;
-                break;
             case "city":
-                if (criterion[1].equalsIgnoreCase(gs.getLocation().getCity())) return true;
+                if(checkLocationConditions(criterion,location))return true;
                 break;
             case "cafe":
                 if (criterion[1].equalsIgnoreCase(String.valueOf(gs.getCafe()))) return true;
@@ -154,5 +158,23 @@ public class FindCommand implements Command {
                 return false;
         }
         return null;
+    }
+
+    private Boolean checkLocationConditions(String[] criterion, Location location) {
+        if(location==null){
+            return false;
+        }
+        switch (criterion[0]) {
+            case "road":
+                if (criterion[1].equalsIgnoreCase(location.getRoadNumber())) return true;
+                break;
+            case "region":
+                if (criterion[1].equalsIgnoreCase(location.getRegion())) return true;
+                break;
+            case "city":
+                if (criterion[1].equalsIgnoreCase(location.getCity())) return true;
+                break;
+        }
+        return false;
     }
 }

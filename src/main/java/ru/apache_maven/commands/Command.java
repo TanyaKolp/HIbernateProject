@@ -1,7 +1,5 @@
 package ru.apache_maven.commands;
 
-import org.hibernate.Session;
-
 import java.util.List;
 
 /**
@@ -9,5 +7,6 @@ import java.util.List;
  */
 public interface Command {
     public Result execute(List<String> input);
+
     public String getHelp();
 }
